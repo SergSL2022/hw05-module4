@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  namespace: slipchuk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: serhiyslipchuk/nginx-private:v1
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: nginx-config-volume
+          mountPath: /etc/nginx/conf.d/nginx.conf
+          subPath: nginx.conf
+      imagePullSecrets:
+      - name: slipchuk-private-registry-key
+      volumes:
+      - name: nginx-config-volume
+        configMap:
+          name: nginx-config
